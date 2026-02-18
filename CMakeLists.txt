@@ -4,13 +4,21 @@ project(Calculator LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# ─── COVERAGE FLAG'LERİ ───
+option(ENABLE_COVERAGE "Enable coverage reporting" ON)
+
+if(ENABLE_COVERAGE)
+    add_compile_options(--coverage -O0 -g)
+    add_link_options(--coverage)
+endif()
+
 # ─── 1. ANA PROGRAM ───
 add_executable(calculator
     src/main.cpp
     src/Calculator.cpp
 )
 
-# ─── 2. GOOGLE TEST (İNTERNETTEN OTOMATİK İNDİR) ───
+# ─── 2. GOOGLE TEST ───
 include(FetchContent)
 
 FetchContent_Declare(

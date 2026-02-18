@@ -14,18 +14,17 @@ pipeline {
 
     stage('Build & Test (Docker)') {
       steps {
-        // Docker imajını build et (tester aşamasına kadar)
         sh 'docker build --target tester -t calculator-tester .'
       }
     }
 
-    stage('Extract Test Results') {
+    stage('Extract Reports') {
       steps {
-        // Test sonuçlarını konteynırdan kopyala
         sh '''
           docker rm -f calc-tester || true
           docker run --name calc-tester calculator-tester echo "ok"
           docker cp calc-tester:/app/test-results/test_results.xml .
+          docker cp calc-tester:/app/coverage/html ./coverage-report
           docker rm -f calc-tester
         '''
       }
@@ -40,14 +39,22 @@ pipeline {
 
   post {
     always {
-      // JUnit plugin ile test raporunu yayınla
       junit 'test_results.xml'
+
+      publishHTML(target: [
+        allowMissing: false,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'coverage-report',
+        reportFiles: 'index.html',
+        reportName: 'Coverage Report'
+      ])
     }
     success {
-      echo 'Pipeline başarılı — testler geçti!'
+      echo 'Pipeline başarılı!'
     }
     failure {
-      echo 'Pipeline başarısız — loglara bak!'
+      echo 'Pipeline başarısız!'
     }
   }
 }
