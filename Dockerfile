@@ -22,7 +22,7 @@ RUN cd build && ./calculator_tests --gtest_output=xml:/app/test-results/test_res
 
 RUN cd build && \
     lcov --capture --directory . --output-file /app/coverage/coverage.info --ignore-errors mismatch && \
-    lcov --remove /app/coverage/coverage.info '/usr/*' '*/googletest/*' '*/build/*' --output-file /app/coverage/coverage_filtered.info && \
+    lcov --remove /app/coverage/coverage.info '/usr/*' '*/googletest/*' '*/build/*' --output-file /app/coverage/coverage_filtered.info --ignore-errors unused && \
     genhtml /app/coverage/coverage_filtered.info --output-directory /app/coverage/html
 
 # ─── 3. AŞAMA: ÇALIŞMA ───
