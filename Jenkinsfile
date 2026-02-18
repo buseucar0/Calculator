@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    DOCKER_BUILDKIT = '1'
+    DOCKER_BUILDKIT = '0'
   }
 
   stages {
@@ -14,25 +14,40 @@ pipeline {
 
     stage('Build & Test (Docker)') {
       steps {
-        // Dockerfile'ı kullanarak imajı oluşturur (tester aşaması testleri çalıştırır)
-        sh 'docker build --pull -t calculator .'
+        // Docker imajını build et (tester aşamasına kadar)
+        sh 'docker build --target tester -t calculator-tester .'
       }
     }
 
-    stage('Show Images') {
+    stage('Extract Test Results') {
       steps {
-        sh 'docker images | grep calculator || true'
+        // Test sonuçlarını konteynırdan kopyala
+        sh '''
+          docker rm -f calc-tester || true
+          docker run --name calc-tester calculator-tester echo "ok"
+          docker cp calc-tester:/app/test-results/test_results.xml .
+          docker rm -f calc-tester
+        '''
+      }
+    }
+
+    stage('Build Final Image') {
+      steps {
+        sh 'docker build --target runner -t calculator .'
       }
     }
   }
 
   post {
+    always {
+      // JUnit plugin ile test raporunu yayınla
+      junit 'test_results.xml'
+    }
     success {
-      echo 'Pipeline başarılı — imaj oluşturuldu ve testler geçti.'
+      echo 'Pipeline başarılı — testler geçti!'
     }
     failure {
-      echo 'Pipeline başarısız — loglara bak.'
-      sh 'docker images | head -n 50 || true'
+      echo 'Pipeline başarısız — loglara bak!'
     }
   }
 }

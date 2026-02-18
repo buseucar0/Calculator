@@ -12,14 +12,17 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 COPY . .
 
-# Derle (build klasörü varsa sil, yoksa oluştur)
+# Derle
 RUN rm -rf build && mkdir build && cd build && cmake .. && cmake --build .
 
 # ─── 2. AŞAMA: TEST ───
 FROM builder AS tester
 
-# Testleri çalıştır
-RUN cd build && ./calculator_tests
+# Test sonuçları için klasör oluştur
+RUN mkdir -p /app/test-results
+
+# Testleri çalıştır ve XML rapor üret
+RUN cd build && ./calculator_tests --gtest_output=xml:/app/test-results/test_results.xml
 
 # ─── 3. AŞAMA: ÇALIŞMA ───
 FROM ubuntu:24.04 AS runner
