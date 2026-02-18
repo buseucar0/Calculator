@@ -7,7 +7,7 @@
 
 TEST(AddTest, NormalToplama) {
     Calculator calc;
-    EXPECT_EQ(calc.add(10, 5), 15);
+    EXPECT_EQ(calc.add(10, 6), 15);
 }
 
 TEST(AddTest, NegatifToplama) {
