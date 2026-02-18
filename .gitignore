@@ -1,0 +1,23 @@
+````text name=.gitignore
+# Build artifacts
+/build/
+/_build/
+/cmake-build-*/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+thumbs.db
+
+# Docker
+*.tar
