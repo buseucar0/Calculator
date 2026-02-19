@@ -21,3 +21,10 @@ thumbs.db
 
 # Docker
 *.tar
+
+# Node.js
+node_modules/
+
+# CLI simulation output
+sim-output-*.csv
+sim-output-*.jsonl
